@@ -141,7 +141,7 @@ test('a play request aborted by the question pause cannot hide the question', as
 test('deck uses local classic assets and no YouTube iframe controller', () => {
   const html = readFileSync(`${__dirname}/../../index.html`, 'utf8');
   assert.match(html, /src="assets\/video\/schema-video.js\?v=question-frame-20261003"/);
-  assert.match(html, /href="assets\/video\/schema-video.css\?v=question-frame-20261003"/);
+  assert.match(html, /href="assets\/video\/schema-video.css\?v=center-controls-20261003"/);
   assert.doesNotMatch(html, /youtube.com\/iframe_api|new YT.Player|const before = document.querySelector\('.concept-slide-7'\)/);
   for (const [, source] of html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/g)) new Script(source);
   const source = readFileSync(`${__dirname}/schema-video.js`, 'utf8');

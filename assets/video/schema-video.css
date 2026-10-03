@@ -5,12 +5,12 @@
 .local-film-slide .lesson-film { display:block;width:100%;height:100%;object-fit:contain;cursor:pointer; }
 .local-film-slide .lesson-film:focus-visible { outline:3px solid var(--amber);outline-offset:4px; }
 .local-film-slide .lesson-film-message { position:absolute;left:40px;right:40px;top:44%;margin:0;padding:20px 24px;background:var(--navy);color:var(--white);font-size:28px;line-height:1.4;text-align:center;pointer-events:none; }
-.local-film-slide .lesson-film-controls { position:absolute;left:1264px;top:124px;width:232px;display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:12px; }
-.local-film-slide .lesson-film-controls button { height:44px;min-width:0;padding:8px 12px;font-size:20px;white-space:nowrap; }
+.local-film-slide .lesson-film-controls { position:absolute;left:1264px;top:50%;transform:translateY(-50%);width:232px;display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:16px; }
+.local-film-slide .lesson-film-controls button { height:48px;min-width:0;padding:8px 12px;font-size:20px;white-space:nowrap; }
 .local-film-slide .lesson-seek { grid-column:1/-1;width:100%;min-width:0;height:28px;margin:0;accent-color:var(--amber);cursor:pointer; }
 .local-film-slide .lesson-clock { grid-column:1/-1;font-size:20px;text-align:center;font-variant-numeric:tabular-nums;color:var(--soft); }
 .local-film-slide .lesson-mute { grid-column:1/-1; }
-.local-film-slide .lesson-status { grid-column:1/-1;margin:0;font-size:18px;line-height:1.5;color:var(--soft);word-break:keep-all; }
+.local-film-slide .lesson-status { position:absolute;left:0;right:0;bottom:calc(100% + 16px);margin:0;font-size:18px;line-height:1.5;color:var(--soft);word-break:keep-all; }
 .local-film-slide .lesson-status:empty { display:none; }
 .local-film-slide[data-video-state="question"] .lesson-status { position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap; }
 .local-film-slide :is(button,input):focus-visible { outline:3px solid var(--amber);outline-offset:4px; }
