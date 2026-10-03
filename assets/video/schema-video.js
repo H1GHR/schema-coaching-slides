@@ -117,16 +117,10 @@
       slide.innerHTML = `<header class="slide-header"><h1>같은 장면, 다른 생각.</h1></header>
         <div class="lesson-film-stage">
           <video class="lesson-film" src="media/schema-film-final-1080p.mp4" preload="metadata" playsinline aria-label="같은 장면, 다른 생각" tabindex="0"></video>
-          <section class="lesson-question" role="dialog" aria-modal="true" aria-labelledby="lesson-question-title" hidden>
-            <p class="lesson-context">준이가 대답 없이 지나갔어요.</p>
-            <h2 id="lesson-question-title">나는 어떤 생각이 먼저 들었나요?</h2>
-            <div class="lesson-answers"><p>😟 화났나?</p><p>🏃 급한가?</p><p>👀 못 봤나?</p><p>❓ 다른 생각·모르겠어요</p></div>
-            <p class="lesson-response-hint">채팅에 이모지 하나 · 설명은 선택 · 패스도 괜찮아요</p>
-            <div class="lesson-question-actions"><button class="lesson-continue primary" type="button">이어서 보기</button><button class="lesson-question-restart" type="button">처음부터</button></div>
-          </section>
           <p class="lesson-film-message">재생을 누르면 영상이 시작돼요.</p>
         </div>
         <div class="lesson-film-controls" aria-label="영상 조작">
+          <button class="lesson-continue primary" type="button" hidden>이어서 보기</button>
           <button class="lesson-play primary" type="button">재생</button>
           <button class="lesson-restart" type="button">처음부터</button>
           <input class="lesson-seek" type="range" min="0" max="168.9" step="0.0333333333" value="0" aria-label="영상 재생 위치">
@@ -141,7 +135,6 @@
         </div><span class="lesson-slide-number"></span></footer>`;
       const $ = selector => slide.querySelector(selector);
       const video = $('.lesson-film');
-      const prompt = $('.lesson-question');
       const play = $('.lesson-play');
       const seek = $('.lesson-seek');
       const resume = $('.lesson-continue');
@@ -149,13 +142,14 @@
       let previousPhase = 'idle';
       const controller = new SchemaLocalController(video, (phase, time, message) => {
         const changed = phase !== previousPhase;
+        const resumeHadFocus = document.activeElement === resume;
         previousPhase = phase;
         slide.dataset.videoState = phase;
-        prompt.hidden = phase !== 'question';
+        resume.hidden = phase !== 'question';
+        play.hidden = phase === 'question';
         video.inert = phase === 'question';
         play.disabled = seek.disabled = phase === 'question' || phase === 'error';
         $('.lesson-restart').disabled = phase === 'error';
-        $('.lesson-film-controls').inert = phase === 'question';
         $('.lesson-clock').textContent = `${clock(time)} / ${clock(DURATION)}`;
         seek.value = String(time);
         seek.setAttribute('aria-valuetext', `${clock(time)} / ${clock(DURATION)}`);
@@ -163,14 +157,13 @@
         const note = $('.lesson-film-message');
         note.hidden = !['idle', 'error'].includes(phase);
         if (phase === 'error') note.textContent = message;
-        const statusText = message || ({question: '생각을 나눈 뒤 이어서 보세요.', loading: '영상을 불러오는 중이에요.', ended: '영상을 모두 봤어요.'}[phase] || '');
+        const statusText = message || ({question: '영상이 질문 화면에서 멈췄어요. 나는 어떤 생각이 먼저 들었나요? 화났나, 급한가, 못 봤나, 다른 생각, 모르겠어 중 하나를 채팅에 보내거나 패스해도 괜찮아요. 생각을 나눈 뒤 이어서 보세요.', loading: '영상을 불러오는 중이에요.', ended: '영상을 모두 봤어요.'}[phase] || '');
         if (status.textContent !== statusText) status.textContent = statusText;
         if (changed && phase === 'question' && controller.active) resume.focus({ preventScroll: true });
-        else if (changed && phase !== 'question' && document.activeElement === resume) play.focus({ preventScroll: true });
+        else if (changed && phase !== 'question' && resumeHadFocus) play.focus({ preventScroll: true });
       });
       play.addEventListener('click', () => controller.toggle());
       $('.lesson-restart').addEventListener('click', () => controller.restart());
-      $('.lesson-question-restart').addEventListener('click', () => controller.restart());
       resume.addEventListener('click', () => controller.play());
       seek.addEventListener('input', () => controller.seek(Number(seek.value)));
       $('.lesson-mute').addEventListener('click', event => {
@@ -182,12 +175,6 @@
       video.addEventListener('keydown', event => {
         if (event.key === ' ' || event.key === 'Enter') { event.preventDefault(); controller.toggle(); }
         event.stopPropagation();
-      });
-      prompt.addEventListener('keydown', event => {
-        if (event.key === 'Tab') {
-          event.preventDefault();
-          (document.activeElement === resume ? $('.lesson-question-restart') : resume).focus();
-        }
       });
       instance = { slide, controller };
       return [...document.querySelectorAll('.slide')].map((item, index) => {
